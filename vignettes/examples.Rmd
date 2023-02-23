@@ -1,0 +1,98 @@
+---
+title: "Using data cubes in R"
+author: "Beni Stocker"
+date: "2023-02-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Using the sits R package
+
+To run the examples in the book, please also install the “sitsdata” package.
+```{r eval=FALSE}
+# options(download.file.method = "wget"1)
+devtools::install_github("e-sensing/sitsdata")
+```
+
+```{r}
+library(sits)
+```
+Example from https://github.com/e-sensing/sits:
+```{r}
+s2_cube <- sits_cube(
+    source = "MPC",
+    collection = "SENTINEL-2-L2A",
+    tiles = c("20LKP", "20LLP"),
+    bands = c("B03", "B08", "B11", "SCL"),
+    start_date = as.Date("2018-07-01"),
+    end_date = as.Date("2019-06-30"),
+    progress = FALSE
+)
+```
+
+
+Example from [here](https://e-sensing.github.io/sitsbook/earth-observation-data-cubes.html.):
+```{r}
+# create a data cube covering an area in the Brazilian Amazon
+s2_20LKP_cube_MPC <- sits_cube(
+  source = "MPC",
+  collection = "SENTINEL-2-L2A",
+  tiles = "20LKP",
+  bands = c("B02", "B8A", "B11", "CLOUD"),
+  start_date = "2019-07-01",
+  end_date = "2019-07-28"
+)
+# plot a color composite of one date of the cube
+plot(s2_20LKP_cube_MPC,
+  red = "B11", blue = "B02", green = "B8A",
+  date = "2019-07-18"
+)
+```
+
+## Amazon Web Service
+
+This is open access.
+
+Example from https://e-sensing.github.io/sitsbook/earth-observation-data-cubes.html 
+```{r}
+# create a data cube covering an area in the Rondonia state in the Brazilian Amazon
+# Sentinel-2 images over
+s2_20LKP_cube <- sits_cube(
+  source = "AWS",
+  collection = "SENTINEL-S2-L2A-COGS",
+  tiles = "20LKP",
+  bands = c("B04", "B08", "B11", "CLOUD"),
+  start_date = "2018-07-12",
+  end_date = "2019-07-28"
+)
+```
+
+```{r}
+# plot a color composite of one date of the cube
+plot(s2_20LKP_cube,
+  red = "B04", blue = "B08", green = "B11",
+  date = "2019-07-18"
+)
+```
+
+## Following advice from ChatGPT
+
+Absolutely useless!
+
+```{r}
+# Set up your AWS credentials
+aws_auth(access_key_id = "YOUR_ACCESS_KEY", secret_access_key = "YOUR_SECRET_KEY")
+
+# Define the scene to download
+scene <- sits_scene(extent = c(6.49647, 6.69647, 45.59899, 45.79899), time = c("2022-01-01", "2022-01-02"))
+
+# Download the scene from AWS
+sits_download(scene, product = "SENTINEL-S2-L2A-COGS")
+
+# Plot the downloaded scene
+sits_plot(scene)
+```
